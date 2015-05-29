@@ -1,5 +1,5 @@
 'use strict';
-/* jshint sub: true */
+
 var r;
 var moment = require('moment');
 var _ = require('lodash');
@@ -8,15 +8,24 @@ var debug = require('debug')('connectors:rethinkdb');
 var Connector = require('loopback-connector').Connector;
 var Promise = require('bluebird');
 
+function RethinkDB(s, dataSource) {
+    debug('ctor');
+    Connector.call(this, 'rethink', s);
+    this.dataSource = dataSource;
+    this.database = s.database;
+}
+
+util.inherits(RethinkDB, Connector);
+
 exports.initialize = function initializeDataSource(dataSource, callback) {
     debug('initialize');
 
     var s = dataSource.settings;
 
-    if (dataSource.settings.rs) {
+    if(dataSource.settings.rs) {
 
         s.rs = dataSource.settings.rs;
-        if (dataSource.settings.url) {
+        if(dataSource.settings.url) {
             var uris = dataSource.settings.url.split(',');
             s.hosts = [];
             s.ports = [];
@@ -25,13 +34,13 @@ exports.initialize = function initializeDataSource(dataSource, callback) {
                 s.hosts.push(url.hostname || 'localhost');
                 s.ports.push(parseInt(url.port || '28015', 10));
 
-                if (!s.database) {
+                if(!s.database) {
                     s.database = url.pathname.replace(/^\//, '');
                 }
-                if (!s.username) {
+                if(!s.username) {
                     s.username = url.auth && url.auth.split(':')[0];
                 }
-                if (!s.password) {
+                if(!s.password) {
                     s.password = url.auth && url.auth.split(':')[1];
                 }
             });
@@ -41,7 +50,7 @@ exports.initialize = function initializeDataSource(dataSource, callback) {
 
     } else {
 
-        if (dataSource.settings.url) {
+        if(dataSource.settings.url) {
             var url = require('url').parse(dataSource.settings.url);
 
             s.host = url.hostname;
@@ -69,15 +78,6 @@ exports.initialize = function initializeDataSource(dataSource, callback) {
     process.nextTick(callback);
 };
 
-function RethinkDB(s, dataSource) {
-    debug('ctor');
-    Connector.call(this, 'rethink', s);
-    this.dataSource = dataSource;
-    this.database = s.database;
-}
-
-util.inherits(RethinkDB, Connector);
-
 RethinkDB.prototype.connect = function(cb) {
     cb(); // connection pooling handles it
 };
@@ -99,12 +99,12 @@ RethinkDB.prototype.autoupdate = function(models, done) {
     debug('autoupdate');
     var _this = this;
 
-    if ((!done) && ('function' === typeof models)) {
+    if((!done) && ('function' === typeof models)) {
         done = models;
         models = undefined;
     }
     // First argument is a model name
-    if ('string' === typeof models) {
+    if('string' === typeof models) {
         models = [models];
     }
 
@@ -114,12 +114,12 @@ RethinkDB.prototype.autoupdate = function(models, done) {
         .catch(done)
         .then(function(list) {
             var promises = models.map(function(model) {
-                if (list.length === 0 || list.indexOf(model) < 0) {
+                if(list.length === 0 || list.indexOf(model) < 0) {
                     return r.db(_this.database).tableCreate(model).run()
                         .then(function() {
                             createIndices(model);
                         });
-                        // .catch(cb);
+                    // .catch(cb);
                 } else {
                     return createIndices(model);
                 }
@@ -135,9 +135,9 @@ RethinkDB.prototype.autoupdate = function(models, done) {
 
         function checkAndCreate(list, indexName, indexOption, indexFunction) {
             // Don't attempt to create an index on primary key 'id'
-            if (indexName !== 'id' && _hasIndex(_this, model, indexName) && list.indexOf(indexName) < 0) {
+            if(indexName !== 'id' && _hasIndex(_this, model, indexName) && list.indexOf(indexName) < 0) {
                 var query = r.db(_this.database).table(model);
-                if (indexFunction) {
+                if(indexFunction) {
                     query = query.indexCreate(indexName, indexFunction, indexOption);
                 } else {
                     query = query.indexCreate(indexName, indexOption);
@@ -148,7 +148,7 @@ RethinkDB.prototype.autoupdate = function(models, done) {
             }
         }
 
-        if (!_.isEmpty(indexCollection)) {
+        if(!_.isEmpty(indexCollection)) {
             return r.db(_this.database).table(model).indexList().run()
                 .catch(function(err) {
                     return Promise.reject(err);
@@ -180,20 +180,20 @@ RethinkDB.prototype.isActual = function(cb) {
     r.db(_this.database).tableList().run()
         .catch(cb)
         .then(function(list) {
-            if (_.isEmpty(list)) {
+            if(_.isEmpty(list)) {
                 cb(null, _.isEmpty(_this._models));
             }
             var actual = true;
 
             var promises = Object.keys(_this._models).map(function(model) {
-                if (!actual) {
+                if(!actual) {
                     return;
                 }
 
                 var properties = _this._models[model].properties;
                 var settings = _this._models[model].settings;
                 var indexCollection = _.extend({}, properties, settings);
-                if (list.indexOf(model) < 0) {
+                if(list.indexOf(model) < 0) {
                     actual = false;
                     return;
                 } else {
@@ -202,12 +202,12 @@ RethinkDB.prototype.isActual = function(cb) {
                             return Promise.reject(err);
                         })
                         .then(function(list) {
-                            if (!actual) {
+                            if(!actual) {
                                 return 'isActual error';
                             }
 
                             Object.keys(indexCollection).forEach(function(property) {
-                                if (_hasIndex(_this, model, property) && list.indexOf(property) < 0) {
+                                if(_hasIndex(_this, model, property) && list.indexOf(property) < 0) {
                                     actual = false;
                                 }
                             });
@@ -223,7 +223,7 @@ RethinkDB.prototype.isActual = function(cb) {
 
 RethinkDB.prototype.create = function(model, data, callback) {
     debug('create');
-    if (data.id === null || data.id === undefined) {
+    if(data.id === null || data.id === undefined) {
         delete data.id;
     }
 
@@ -232,7 +232,7 @@ RethinkDB.prototype.create = function(model, data, callback) {
 
 RethinkDB.prototype.updateOrCreate = function(model, data, callback) {
     debug('updateOrCreate');
-    if (data.id === null || data.id === undefined) {
+    if(data.id === null || data.id === undefined) {
         delete data.id;
     }
 
@@ -243,12 +243,12 @@ RethinkDB.prototype.save = function(model, data, callback, strict, returnObject)
     debug('save');
     var _this = this;
 
-    if (strict == undefined) {
+    if(strict == undefined) {
         strict = false;
     }
 
     Object.keys(data).forEach(function(key) {
-        if (data[key] === undefined) {
+        if(data[key] === undefined) {
             data[key] = null;
         }
     });
@@ -260,22 +260,22 @@ RethinkDB.prototype.save = function(model, data, callback, strict, returnObject)
         .catch(callback)
         .then(function(m) {
             var err = m.first_error && new Error(m.first_error);
-            if (err) {
+            if(err) {
                 throw new Error(err);
             } else {
                 var info = {};
                 var id = model.id;
 
-                if (m.inserted > 0) {
+                if(m.inserted > 0) {
                     info.isNewInstance = true;
                 }
                 // if (m.changes) {
-                if (m.changes && m.changes.length > 0) {
+                if(m.changes && m.changes.length > 0) {
                     id = m.changes[0].new_val.id;
                 }
 
                 // if (returnObject && m.changes) {
-                if (returnObject && m.changes && m.changes.length > 0) {
+                if(returnObject && m.changes && m.changes.length > 0) {
                     return [m.changes[0].new_val, info];
                 } else {
                     return [id, info];
@@ -311,7 +311,7 @@ RethinkDB.prototype.find = function find(model, id, callback) {
         .catch(callback)
         .then(function(data) {
             _keys = _this._models[model].properties;
-            if (data) {
+            if(data) {
                 // Pass to expansion helper
                 _expandResult(data, _keys);
             }
@@ -336,32 +336,32 @@ RethinkDB.prototype.destroy = function destroy(model, id, callback) {
 
 RethinkDB.prototype.all = function all(model, filter, callback, callback2) {
     debug('all');
-    if (typeof callback2 === 'function') {
+    if(typeof callback2 === 'function') {
         callback = callback2;
     }
     var _this = this;
     var _model;
     var _keys;
 
-    if (!filter) {
+    if(!filter) {
         filter = {};
     }
 
     var promise = r.db(_this.database).table(model);
 
-    if (filter.where) {
+    if(filter.where) {
         promise = buildWhere(_this, model, filter.where, promise); //_processWhere(_this, model, filter.where, promise);
     }
 
-    if (filter.order) {
+    if(filter.order) {
         var keys = filter.order;
-        if (typeof keys === 'string') {
+        if(typeof keys === 'string') {
             keys = keys.split(',');
         }
         keys.forEach(function(key) {
             var m = key.match(/\s+(A|DE)SC$/);
             key = key.replace(/\s+(A|DE)SC$/, '').trim();
-            if (m && m[1] === 'DE') {
+            if(m && m[1] === 'DE') {
                 promise = promise.orderBy(r.desc(key));
             } else {
                 promise = promise.orderBy(r.asc(key));
@@ -369,16 +369,16 @@ RethinkDB.prototype.all = function all(model, filter, callback, callback2) {
         });
     } else {
         // default sort by id
-        promise = promise.orderBy(r.asc("id"));
+        promise = promise.orderBy(r.asc('id'));
         // promise = promise.orderBy({index:'id'}});
     }
 
-    if (filter.skip) {
+    if(filter.skip) {
         promise = promise.skip(filter.skip);
-    } else if (filter.offset) {
+    } else if(filter.offset) {
         promise = promise.skip(filter.offset);
     }
-    if (filter.limit) {
+    if(filter.limit) {
         promise = promise.limit(filter.limit);
     }
 
@@ -392,7 +392,7 @@ RethinkDB.prototype.all = function all(model, filter, callback, callback2) {
                 _expandResult(element, _keys);
             });
 
-            if (filter && filter.include && filter.include.length > 0) {
+            if(filter && filter.include && filter.include.length > 0) {
                 _model.includeAsync = Promise.promisify(_model.include);
                 return _model.includeAsync(data, filter.include);
             } else {
@@ -406,13 +406,13 @@ RethinkDB.prototype.destroyAll = function destroyAll(model, where, callback) {
     debug('destroyAll');
     var _this = this;
 
-    if (!callback && 'function' === typeof where) {
+    if(!callback && 'function' === typeof where) {
         callback = where;
         where = undefined;
     }
 
     var promise = r.db(_this.database).table(model);
-    if (where !== undefined) {
+    if(where !== undefined) {
         promise = buildWhere(_this, model, where, promise);
     }
     promise.delete().run()
@@ -431,7 +431,7 @@ RethinkDB.prototype.count = function count(model, callback, where) {
 
     var promise = r.db(_this.database).table(model);
 
-    if (where && typeof where === 'object') {
+    if(where && typeof where === 'object') {
         promise = buildWhere(_this, model, where, promise);
     }
 
@@ -449,7 +449,7 @@ RethinkDB.prototype.updateAttributes = function updateAttrs(model, id, data, cb)
 
     data.id = id;
     Object.keys(data).forEach(function(key) {
-        if (data[key] === undefined) {
+        if(data[key] === undefined) {
             data[key] = null;
         }
     });
@@ -466,7 +466,7 @@ RethinkDB.prototype.update = RethinkDB.prototype.updateAll = function update(mod
     var _this = this;
 
     var promise = r.db(_this.database).table(model);
-    if (where !== undefined) {
+    if(where !== undefined) {
         promise = buildWhere(_this, model, where, promise);
     }
     promise.update(data, {
@@ -492,11 +492,11 @@ function _expandResult(result, keys) {
 
     Object.keys(result).forEach(function(key) {
 
-        if (!keys.hasOwnProperty(key)) {
+        if(!keys.hasOwnProperty(key)) {
             return;
         }
 
-        if (keys[key]['type'] &&
+        if(keys[key]['type'] &&
             keys[key]['type']['name'] === 'Date' &&
             !(result[key] instanceof Date)) {
 
@@ -509,12 +509,12 @@ function _expandResult(result, keys) {
 function _hasIndex(_this, model, key) {
 
     // Primary key always hasIndex
-    if (key === 'id') {
+    if(key === 'id') {
         return true;
     }
 
     var modelDef = _this._models[model];
-    return (_.isObject(modelDef.properties[key]) && modelDef.properties[key].index) ||
+    return(_.isObject(modelDef.properties[key]) && modelDef.properties[key].index) ||
         (_.isObject(modelDef.settings[key]) && modelDef.settings[key].index);
 }
 
@@ -525,7 +525,7 @@ function _toMatchExpr(regexp) {
 
     expr = expr.slice(1, exprStop);
 
-    if (exprCi > -1) {
+    if(exprCi > -1) {
         expr = '(?i)' + expr;
     }
 
@@ -602,13 +602,13 @@ var operators = {
 
 function buildWhere(self, model, where, promise) {
 
-    if (where === null || (typeof where !== 'object')) {
+    if(where === null || (typeof where !== 'object')) {
         return promise;
     }
 
     var query = buildFilter(where);
 
-    if (query) {
+    if(query) {
         return promise.filter(query);
     } else {
         return promise;
@@ -624,13 +624,13 @@ function buildFilter(where) {
         var conditions = ['and', 'or', 'between', 'gt', 'lt', 'gte', 'lte', 'inq', 'nin', 'near', 'neq', 'like', 'nlike'];
         var condition = where[k];
 
-        if (k === 'and' || k === 'or') {
-            if (_.isArray(condition)) {
+        if(k === 'and' || k === 'or') {
+            if(_.isArray(condition)) {
                 var query = _.map(condition, function(c) {
                     return buildFilter(c);
                 });
 
-                if (k === 'and') {
+                if(k === 'and') {
                     filter.push(_.reduce(query, function(s, f) {
                         return s.and(f);
                     }));
@@ -641,10 +641,10 @@ function buildFilter(where) {
                 }
             }
         } else {
-            if (_.isObject(condition) && _.intersection(_.keys(condition), conditions).length > 0) {
+            if(_.isObject(condition) && _.intersection(_.keys(condition), conditions).length > 0) {
                 // k is condition
                 _.keys(condition).forEach(function(operator) {
-                    if (conditions.indexOf(operator) >= 0) {
+                    if(conditions.indexOf(operator) >= 0) {
                         filter.push(operators[operator](k, condition[operator]));
                     }
                 });
