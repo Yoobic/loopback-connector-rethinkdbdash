@@ -1,25 +1,82 @@
 {
   "name": "loopback-connector-rethinkdbdash",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "RethinkDB connector for Loopback.io",
   "main": "index.js",
   "scripts": {
     "test": "make test-verbose"
   },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/yoobic/loopback-connector-rethinkdbdash"
+  },
+  "keywords": [
+    "server",
+    "loopback",
+    "connector",
+    "rethinkdb",
+    "rethinkdbdash"
+  ],
+  "author": "Yoobic <dev@yoobic.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Yoobic/loopback-connector-rethinkdbdash/issues"
+  },
+  "homepage": "https://github.com/Yoobic/loopback-connector-rethinkdbdash",
   "dependencies": {
     "bluebird": "^2.9.26",
     "debug": "^2.2.0",
     "lodash": "^3.9.3",
-    "loopback-connector": "^1.2.1",
-    "moment": "^2.10.2",
-    "rethinkdbdash": "^2.0.10"
+    "loopback-connector": "^2.2.1",
+    "moment": "^2.10.3",
+    "rethinkdbdash": "^2.0.11"
   },
   "devDependencies": {
-    "loopback-datasource-juggler": "^2.26.4",
-    "mocha": "^2.1.0",
-    "should": "^4.6.1"
-  },
-  "repository": "http://github.com/yoobic/loopback-connector-rethinkdbdash",
-  "author": "Yoobic <dev@yoobic.com>",
-  "license": "MIT"
+    "loopback-datasource-juggler": "^2.29.1",
+    "should": "^6.0.3",
+    "chai": "2.3.0",
+    "chalk": "1.0.0",
+    "conventional-changelog": "0.0.17",
+    "del": "1.2.0",
+    "github": "0.2.4",
+    "github-username": "2.0.0",
+    "growly": "1.2.0",
+    "gulp": "3.8.11",
+    "gulp-bump": "0.3.1",
+    "gulp-concat": "2.5.2",
+    "gulp-eslint": "0.12.0",
+    "gulp-exec": "2.1.1",
+    "gulp-git": "1.2.4",
+    "gulp-help": "1.3.4",
+    "gulp-if": "1.2.5",
+    "gulp-istanbul": "0.9.0",
+    "gulp-jscs": "1.6.0",
+    "gulp-jshint": "1.11.0",
+    "gulp-load-plugins": "0.10.0",
+    "gulp-mocha": "2.1.0",
+    "gulp-mux": "^0.2.7",
+    "gulp-plumber": "1.0.1",
+    "gulp-tap": "0.1.3",
+    "gulp-util": "3.0.4",
+    "inquirer": "0.8.5",
+    "jasmine-core": "2.3.4",
+    "jasmine-reporters": "2.0.6",
+    "jasmine-spec-reporter": "2.2.2",
+    "jshint-stylish": "2.0.0",
+    "map-stream": "0.0.5",
+    "mocha": "2.2.5",
+    "mocha-lcov-reporter": "0.0.2",
+    "nock": "^2.3.0",
+    "node-jsxml": "0.6.0",
+    "q": "1.4.1",
+    "require-dir": "0.3.0",
+    "run-sequence": "1.1.0",
+    "sinon": "1.14.1",
+    "stream-combiner": "0.2.1",
+    "streamqueue": "0.1.3",
+    "strip-json-comments": "1.0.2",
+    "supertest": "1.0.1",
+    "supertest-as-promised": "2.0.1",
+    "yargs": "3.9.1"
+  }
 }
