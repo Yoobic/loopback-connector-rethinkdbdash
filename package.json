@@ -78,5 +78,12 @@
     "supertest": "1.0.1",
     "supertest-as-promised": "2.0.1",
     "yargs": "3.9.1"
-  }
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "index.js",
+    "lib/",
+    "bin/"
+  ]
 }
