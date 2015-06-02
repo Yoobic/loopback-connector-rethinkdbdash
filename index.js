@@ -1,3 +1,3 @@
 'use strict';
 
-module.exports = require('./rethink');
+module.exports = require('./lib/rethink');
