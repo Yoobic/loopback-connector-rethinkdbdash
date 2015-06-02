@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/yoobic/loopback-connector-rethinkdbdash"
+    "url": "http://github.com/Yoobic/loopback-connector-rethinkdbdash"
   },
   "keywords": [
     "server",
