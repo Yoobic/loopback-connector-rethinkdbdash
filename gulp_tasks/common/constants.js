@@ -22,7 +22,7 @@ module.exports = function() {
             failedIcon: path.join(cwd, 'node_modules/karma-growl-reporter/images/failed.png')
         },
         lint: [
-            './*.js', 'gulpfile.js', './gulp_tasks/**/*.js', './test/**/*.js'
+            './*.js', 'gulpfile.js', './gulp_tasks/**/*.js', './test/**/*.js', './lib/**/*.js'
         ],
         mocha: {
             libs: ['./*.js', '!gulpfile.js'],
