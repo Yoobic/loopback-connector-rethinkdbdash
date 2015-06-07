@@ -136,12 +136,12 @@ var github = new GitHubApi({
     timeout: 0
 });
 
-var gitGetEmailAsync = Q.nbind(git.exec, git, {
+var gitGetEmailAsync = Q.denodeify(git.exec, git, {
     args: 'config --get user.email',
     quiet: true
 });
 
-var githubUsernameAsync = Q.nfbind(githubUsername);
+var githubUsernameAsync = Q.denodeify(githubUsername);
 
 var inquireAsync = function(result) {
     var deferred = Q.defer();
@@ -175,7 +175,6 @@ gulp.task('githubAuth', false, function(cb) {
     return gitGetEmailAsync()
         .then(githubUsernameAsync)
         .fail(function() {
-            gutil.log(gutil.colors.red('Username not found'));
             return null;
         })
         .then(function(username) {
