@@ -2,6 +2,6 @@
 languages:
   JavaScript: true
 exclude_paths:
-  - "gulp_tasks/*"
-  - "bin/*"
-  - "gulpfile.js"
+- "gulp_tasks/*"
+- "bin/*"
+- "gulpfile.js"
