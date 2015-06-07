@@ -1,6 +1,6 @@
 {
   "name": "loopback-connector-rethinkdbdash",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "RethinkDB connector for Loopback.io",
   "main": "index.js",
   "scripts": {
