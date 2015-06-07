@@ -136,7 +136,7 @@ var github = new GitHubApi({
     timeout: 0
 });
 
-var gitGetEmailAsync = Q.denodeify(git.exec, git, {
+var gitGetEmailAsync = Q.denodeify(git.exec, {
     args: 'config --get user.email',
     quiet: true
 });
