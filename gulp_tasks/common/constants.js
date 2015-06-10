@@ -1,3 +1,4 @@
+/*eslint no-empty:0*/
 'use strict';
 
 var path = require('path');
