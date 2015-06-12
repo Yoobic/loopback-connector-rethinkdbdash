@@ -50,7 +50,7 @@
         "json"
     ],
     "bitwise": true,
-    "browser": true,
+    "browser": false,
     "camelcase": false,
     "curly": true,
     "debug": false,
